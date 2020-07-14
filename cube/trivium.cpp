@@ -9,6 +9,8 @@
 #include<chrono>
 #include"gurobi_c++.h" 
 
+#define TRIVIUMCORE triviumCore
+
 using namespace std;
 
 int depth = 0;
@@ -47,6 +49,51 @@ struct cmp285
     }
 };
 
+void triviumCore2(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
+{    
+   int Ineq[][11] = {
+    {0, -1, -1, 0, -1, -1, 1, 1, 0, 1, 1},
+    {0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0},
+    {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1},
+    {0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0},
+    {0, -1, 0, -1, -1, -1, 1, 0, 1, 1, 1},
+    {0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 1, -1, 0, 0, 0, 0, 1, 0, 0},
+    {2, 0, 1, 0, 1, 0, -1, 0, 0, -1, -1},
+    {0, 1, 1, 0, 1, 1, 0, 0, 0, -1, 0},
+    {3, 1, 0, 0, 1, 0, 0, -1, -1, -1, -1},
+    {2, 0, 0, 1, 1, 0, -1, 0, 0, -1, -1},
+    {0, 1, 0, 1, 1, 1, 0, 0, 0, -1, 0},
+    {3, 0, 0, 0, 1, 1, -1, -1, -1, -1, 0}
+    };  
+    GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
+    GRBVar y2 = model.addVar(0, 1, 0, GRB_BINARY);
+    GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
+    GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
+    GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
+    
+    for ( auto it : Ineq )
+        model.addConstr( it[0] + 
+                         it[1] * x[i1] + 
+                         it[2] * x[i2] + 
+                         it[3] * x[i3] + 
+                         it[4] * x[i4] + 
+                         it[5] * x[i5] + 
+                         it[6] * y1 + 
+                         it[7] * y2 + 
+                         it[8] * y3 + 
+                         it[9] * y4 +  
+                         it[10] * y5 >= 0 );
+
+     x[i1] = y1;
+     x[i2] = y2;
+     x[i3] = y3;
+     x[i4] = y4;
+     x[i5] = y5;
+}
+
+
 void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int i4, int i5)
 {
     GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
@@ -54,33 +101,26 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
-
     GRBVar z1 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar z2 = model.addVar(0, 1, 0, GRB_BINARY);
-
     GRBVar a = model.addVar(0, 1, 0, GRB_BINARY);
 
-    // note copy is different from that in CRYPTO 2017 paper
-    //copy
     model.addConstr(y1 <= x[i1]);
     model.addConstr(z1 <= x[i1]);
     model.addConstr(y1 + z1 >= x[i1]);
 
-    //copy
     model.addConstr(y2 <= x[i2]);
     model.addConstr(z2 <= x[i2]);
     model.addConstr(y2 + z2 >= x[i2]);
 
-    //copy
     model.addConstr(y3 <= x[i3]);
     model.addConstr(a <= x[i3]);
     model.addConstr(y3 + a >= x[i3]);
     
-    //copy
     model.addConstr(y4 <= x[i4]);
     model.addConstr(a <= x[i4]);
     model.addConstr(y4 + a >= x[i4]);
-    //xor
+
     model.addConstr(y5 == x[i5] + a + z1 + z2);
 
     x[i1] = y1;
@@ -92,24 +132,16 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
 
 int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288> > & term )
 {
-    // Create the environ
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
-    env.set(GRB_StringParam_LogFile, "solutions.log" );
-
-    env.set(GRB_IntParam_Presolve, 0);
-    env.set(GRB_IntParam_MIPFocus, 1);
-    env.set(GRB_IntParam_PoolSearchMode, 1);//focus on finding additional solutions 
+    env.set(GRB_IntParam_PoolSearchMode, 2);//find n best solutions 
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
-
     GRBModel model = GRBModel(env);
 
     vector<GRBVar> s(288);
     for (int i = 0; i < 288; i++)
         s[i] = model.addVar(0, 1, 0, GRB_BINARY);
 
-    // Round function
-    //  store the initial state 
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
@@ -122,14 +154,6 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
             works[(i + 1) % 288] = temp[i];
     }
 
-    // Output constraint
-    //GRBLinExpr nk = 0;
-    //for ( int i = 0; i < 288; i++ )
-    //    if ( (i == 65) || (i == 92) || (i == 161) || (i == 176) || (i == 242) || (i == 287))
-    //        nk += works[i];
-    //    else 
-    //        model.addConstr( works[i] == 0);
-    //model.addConstr( nk == 1 );
     for ( int i = 0; i < 288; i++ )
         if ( final[i] == 0 )
             model.addConstr( works[i] == 0 );
@@ -182,21 +206,13 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
 int  MidSolutionCounter( int rounds, bitset<80> cube, const bitset<288> & last, 
 map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 {
-    //setting the enviroment
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
     env.set(GRB_IntParam_Threads, 48);
-    env.set(GRB_StringParam_LogFile, "solutions.log" );
-
-    //env.set(GRB_IntParam_Presolve, 0);
     env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding additional solutions 
-    env.set(GRB_IntParam_MIPFocus, 3);
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
-        
-    // Create the model
     GRBModel model = GRBModel(env);
 
-    // Create variables
     vector<GRBVar> s(288);
     for (int i = 0; i < 288; i++)
         s[i] = model.addVar(0, 1, 0, GRB_BINARY);
@@ -213,40 +229,33 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     for ( int i = 93 + 80; i < 285; i++ )
         model.addConstr( s[i] == 0 );
 
-    // other bits are free
-    // Round function
     vector<GRBVar> works = s;
-
     for (int r = 0; r < rounds; r++) 
     {
         triviumCore(model, works, 65, 170, 90, 91, 92);
         triviumCore(model, works, 161, 263, 174, 175, 176);
         triviumCore(model, works, 242, 68, 285, 286, 287);
             
-        // or the works cannot work
         vector<GRBVar> temp = works;
         for (int i = 0; i < 288; i++) 
             works[(i + 1) % 288] = temp[i];
     }
 
-    // Output constraint
+    // Output function
     for ( int i = 0; i < 288; i++ )
         if ( last[i] == 1)
             model.addConstr( works[i] == 1 );
         else
             model.addConstr( works[i] == 0 );
-    // 
+
     GRBLinExpr nk = 0;
     for ( int i = 0; i < 80; i++ )
         nk += s[i];
     model.setObjective( nk, GRB_MINIMIZE );
 
-
-//    if ( rounds > 550 )
-//        model.set(GRB_DoubleParam_TimeLimit, 600.0 );
-//=======
     cout << getCurrentSystemTime() << endl;
     f << getCurrentSystemTime() << endl;
+
     if ( rounds > 600 )
          model.set(GRB_DoubleParam_TimeLimit, 120.0 );
     else if ( rounds > 500 )
@@ -276,7 +285,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
         int tsize = T.size();
 
         int count = 0;
-	depth++;
+	    depth++;
         for ( auto it : T )
         {
             cout << c << " out of " << tsize << "| Depth " << depth << endl;
@@ -284,7 +293,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
             c++;
             MidSolutionCounter( rounds - re, cube, it,  counterMap, f );    
         }
-	depth --;
+	    depth --;
     }
     else
     {
@@ -316,21 +325,15 @@ int BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
     env.set(GRB_StringParam_LogFile, "solutions.log" );
-
-    env.set(GRB_IntParam_Presolve, 0);
-    env.set(GRB_IntParam_MIPFocus, 1);
-    env.set(GRB_IntParam_PoolSearchMode, 1);//focus on finding additional solutions 
+    env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding additional solutions 
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
 
     GRBModel model = GRBModel(env);
 
-    // Create variables
     vector<GRBVar> s(288);
     for (int i = 0; i < 288; i++)
         s[i] = model.addVar(0, 1, 0, GRB_BINARY);
 
-    // Round function
-    //  store the initial state 
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
@@ -343,7 +346,6 @@ int BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
             works[(i + 1) % 288] = temp[i];
     }
 
-    // Output constraint
     GRBLinExpr nk = 0;
     for ( int i = 0; i < 288; i++ )
         if ( (i == 65) || (i == 92) || (i == 161) || (i == 176) || (i == 242) || (i == 287))
@@ -396,9 +398,20 @@ int BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
 }
 
 
-int main()
+int main( int argc, char * argv[] )
 {
+    if ( argc != 3 )
+    {
+        cout << "Usage: ./trivium round cube_index" << endl;
+        cout << "Cube index: " << endl
+             << "Round: 840:" << endl;
+             << "Cube_index = 1: [0,1,...,79]/{70, 72, 74, 76, 78}" << endl
+             << "Cube_index = 2: [0,1,...,79]/{72, 74, 76, 78}" << endl
+             << "Cube_index = 3: [0,1,...,79]/{70, 74, 76, 78}" << endl;
+    }
+    
     ofstream IV;
+    
 /*****************************************************************************
     int MID = 1;
     int ROUND = 841;
