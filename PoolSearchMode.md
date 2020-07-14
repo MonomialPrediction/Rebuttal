@@ -4,7 +4,7 @@ This is indeed an important question since several previous works (e.g., [HLM+20
 
 Besides, one can practically verify the specific superpolies we obtained by the following procedure:
 
-1. For a monomial x^u with n monomial trails x^u \rightsquigarrow z, call Gurobi to output the set  X of all solutions with |X| = n
+1. For a monomial x^u with n monomial trails x^u --> z, call Gurobi to output the set  X of all solutions with |X| = n
 2. Verify the solutions one by one outside the Gurobi context (like verifying differential characteristics)
 3. Add constraints to eliminate all solutions in X
 4. If the resulting model is infeasible, we compute its Irreducible Infeasible Subsystem (IIS, a short evidence that can be verified manually). If the IIS is valid, the original model indeed contains exactly n solutions. 
@@ -13,4 +13,3 @@ Finally, the code for the a+b+c+d+e+f example can be found at https://github.com
 
 [DFGW07] Emilie Danna, Mary Fenelon, Zonghao Gu, and Roland Wunderling. "Generating multiple solutions for mixed integer programming problems." In International Conference on Integer Programming and Combinatorial Optimization, pp. 280-294. Springer, Berlin, Heidelberg, 2007.
 
-$$\sum x_i = 1$$
