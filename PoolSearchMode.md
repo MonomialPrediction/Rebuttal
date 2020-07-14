@@ -9,7 +9,7 @@ Besides, one can practically verify the specific superpolies we obtained by the 
 3. Add constraints to eliminate all solutions in X
 4. If the resulting model is infeasible, we compute its [Irreducible Infeasible Subsystem](https://www.gurobi.com/documentation/9.0/refman/py_model_computeiis.html) (IIS, a short evidence that can be verified manually). If the IIS is valid, the original model indeed contains exactly n solutions. 
 
-Finally, the code for the a+b+c+d+e+f example can be found [here](https://github.com/MonomialPrediction/Rebuttal). 
+Finally, we provide the [demo code](https://github.com/MonomialPrediction/Rebuttal) for the a+b+c+d+e+f example mentioned by the reviewer. 
 
 [DFGW07] Emilie Danna, Mary Fenelon, Zonghao Gu, and Roland Wunderling. "Generating multiple solutions for mixed integer programming problems." In International Conference on Integer Programming and Combinatorial Optimization, pp. 280-294. Springer, Berlin, Heidelberg, 2007.
 
