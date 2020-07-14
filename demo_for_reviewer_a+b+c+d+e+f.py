@@ -18,6 +18,7 @@ We have to set Presolve = 0 (close it) simultaneously.
 Another method is to set PoolSearchMode = 2, 
 we confirm its correctness from Dr. Zonghao Gu, one of the co-founder of Gurobi. 
 '''
+# PoolSearchMode = 2
 m = Model()
 m.setParam( 'OutputFlag', 0 )
 m.setParam( 'PoolSearchMode',  2 )
@@ -53,6 +54,8 @@ for i in range( counter ):
 print()
 print( "*" * 50 )
 print()
+
+# PoolSearchMode = 1, Presolve is defautly 1
 m = Model()
 m.setParam( 'OutputFlag', 0 )
 m.setParam( 'PoolSearchMode',  1 )
@@ -83,6 +86,8 @@ for i in range( counter ):
 print()
 print( "*" * 50 )
 print()
+
+# PoolSearchMode = 1, Presolve = 0
 m = Model()
 m.setParam( 'OutputFlag', 0 )
 m.setParam( 'Presolve', 0 )
