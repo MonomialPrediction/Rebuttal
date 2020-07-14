@@ -13,4 +13,4 @@ Finally, the code for the a+b+c+d+e+f example can be found at https://github.com
 
 [DFGW07] Emilie Danna, Mary Fenelon, Zonghao Gu, and Roland Wunderling. "Generating multiple solutions for mixed integer programming problems." In International Conference on Integer Programming and Combinatorial Optimization, pp. 280-294. Springer, Berlin, Heidelberg, 2007.
 
-$\sum x_i = 1$
+$$\sum x_i = 1$$
