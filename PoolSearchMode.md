@@ -11,4 +11,4 @@ Besides, one can practically verify the specific superpolies we obtained by the 
 
 Finally, the code for the a+b+c+d+e+f example can be found at https://github.com/MonomialPrediction/Rebuttal. 
 
-[DFGW07] Danna, Emilie, Mary Fenelon, Zonghao Gu, and Roland Wunderling. "Generating multiple solutions for mixed integer programming problems." In International Conference on Integer Programming and Combinatorial Optimization, pp. 280-294. Springer, Berlin, Heidelberg, 2007.
+[DFGW07] Emilie Danna, Mary Fenelon, Zonghao Gu, and Roland Wunderling. "Generating multiple solutions for mixed integer programming problems." In International Conference on Integer Programming and Combinatorial Optimization, pp. 280-294. Springer, Berlin, Heidelberg, 2007.
