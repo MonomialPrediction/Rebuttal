@@ -223,7 +223,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 
     if ( model.get( GRB_IntAttr_Status ) == GRB_TIME_LIMIT )
     {
-        cout << "-------------------------------------------------------------- EXPAND" << endl;
+        //cout << "-------------------------------------------------------------- EXPAND" << endl;
         int c = 0;  
         vector<bitset<288>> T;
         int re = 0;
@@ -232,7 +232,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
             T.clear();
             re++;
             SecondBackExpandPolynomial(re, last, T );  
-            cout << "T Size: " << T.size() << " RE:" << re <<  endl;
+            //cout << "T Size: " << T.size() << " RE:" << re <<  endl;
         }while ( T.size() <= 16 && (re + 10) < rounds ); 
         int tsize = T.size();
 
@@ -240,7 +240,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 	    depth++;
         for ( auto it : T )
         {
-            cout << c << " out of " << tsize << "| Depth " << depth << endl;
+            //cout << c << " out of " << tsize << "| Depth " << depth << endl;
             c++;
             MidSolutionCounter( rounds - re, cube, it,  counterMap, f );    
         }

@@ -168,10 +168,10 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
     if( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
     {
         double time = model.get(GRB_DoubleAttr_Runtime );
-        cout << "Time Used: " << time << "sec" << endl;
+        //cout << "Time Used: " << time << "sec" << endl;
         
         int solCount = model.get(GRB_IntAttr_SolCount);
-        cout << "Raw Solutions: " << solCount << endl;
+        //cout << "Raw Solutions: " << solCount << endl;
 
         bitset<288> start;
         for ( int i = 0; i < solCount; i++ )
@@ -200,7 +200,7 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
     for ( auto it : counterMap )
         if ( it.second % 2 == 1 )
             term.push_back( it.first );
-    cout << "Exact terms: " << term.size() << endl;
+    //cout << "Exact terms: " << term.size() << endl;
 }
 
 int  MidSolutionCounter( int rounds, const bitset<285> & start, const bitset<288> & last, double& time )
@@ -249,7 +249,7 @@ int  MidSolutionCounter( int rounds, const bitset<285> & start, const bitset<288
     int solnum = 0;
     if ( model.get( GRB_IntAttr_Status ) == GRB_TIME_LIMIT )
     {
-	    cout << "-------------------------------------------------------------- EXPAND" << endl;
+	    //cout << "-------------------------------------------------------------- EXPAND" << endl;
 	    vector<bitset<288>> T;
 	    int re = 0;
         do 
@@ -262,7 +262,7 @@ int  MidSolutionCounter( int rounds, const bitset<285> & start, const bitset<288
 	    int c = 0;
         for ( auto it : T )
         {
-            cout << c << " out of " << tsize << "| Depth " << depth << endl;
+            //cout << c << " out of " << tsize << "| Depth " << depth << endl;
             c++;
 	        double mytime; 
             solnum += MidSolutionCounter( rounds - re, start, it, mytime );    
@@ -324,10 +324,10 @@ void BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
     if( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
     {
         double time = model.get(GRB_DoubleAttr_Runtime );
-        cout << "Time Used: " << time << "sec" << endl;
+        //cout << "Time Used: " << time << "sec" << endl;
         
         int solCount = model.get(GRB_IntAttr_SolCount);
-        cout << "Raw Solutions: " << solCount << endl;
+        //cout << "Raw Solutions: " << solCount << endl;
 
         bitset<288> start;
         for ( int i = 0; i < solCount; i++ )
@@ -356,7 +356,7 @@ void BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
     for ( auto it : counterMap )
         if ( it.second % 2 == 1 )
             term.push_back( it.first );
-    cout << "Exact terms: " << term.size() << endl;
+    //cout << "Exact terms: " << term.size() << endl;
 }
 
 /*
@@ -432,10 +432,10 @@ int UpBound( int rounds, int backrounds, vector<bitset<288>> & Term, bitset<285>
         {
             double time = model.get(GRB_DoubleAttr_Runtime );
             // find a monomial x^u \rightsquigarrow z 
-            cout << "Candidate Found: " 
-                 <<  model.getObjective().getValue() 
-                 <<  " |  Time Used: " 
-                 << time << "sec" << endl;
+            //cout << "Candidate Found: " 
+            //     <<  model.getObjective().getValue() 
+            //     <<  " |  Time Used: " 
+            //     << time << "sec" << endl;
         
             for ( int j = 0; j < 285; j++ ) 
                 if ( round( s[j].get( GRB_DoubleAttr_Xn ) ) == 1 )  
@@ -444,14 +444,14 @@ int UpBound( int rounds, int backrounds, vector<bitset<288>> & Term, bitset<285>
                     start[j] = 0;
 
             int solCount = 0;
-            cout << "We need to count " << size <<  " terms" << endl;
+            //cout << "We need to count " << size <<  " terms" << endl;
 
             // divide-and-conquer
             for ( int i = 0; i < size; i++ )
             {
                 int solnum = MidSolutionCounter( rounds - backrounds, start, Term[i], time );
                 solCount += solnum;
-                cout << "Term: " << i << " Solnum: " << solnum << " Total: " << solCount  << " |  Time: "  << time << endl;
+                //cout << "Term: " << i << " Solnum: " << solnum << " Total: " << solCount  << " |  Time: "  << time << endl;
             }
 
             //confirmed
@@ -483,8 +483,8 @@ struct DV
 int main()
 {
     DV DEG[900];
-    int MID = 200; // For divide-and-conquer
-    int str = 1, end = 834; // from round 1 - 834
+    int MID = 1; // For divide-and-conquer
+    int str = 2, end = 834; // from round 2 - 834
 
     vector<bitset<288>> Term;
     BackExpandPolynomial( MID, Term ); // Expand trivium
