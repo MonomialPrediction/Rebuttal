@@ -104,24 +104,29 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     GRBVar z1 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar z2 = model.addVar(0, 1, 0, GRB_BINARY);
 
-    GRBVar a = model.addVar(0, 1, 0, GRB_BINARY);
+    // z3 and z4 are not needed, since z3 = z4 = ad
+    GRBVar ad = model.addVar(0, 1, 0, GRB_BINARY);
 
+    //copy
     model.addConstr(y1 <= x[i1]);
     model.addConstr(z1 <= x[i1]);
     model.addConstr(y1 + z1 >= x[i1]);
 
+    //copy
     model.addConstr(y2 <= x[i2]);
     model.addConstr(z2 <= x[i2]);
     model.addConstr(y2 + z2 >= x[i2]);
 
+    //copy
     model.addConstr(y3 <= x[i3]);
-    model.addConstr(a <= x[i3]);
-    model.addConstr(y3 + a >= x[i3]);
+    model.addConstr(ad <= x[i3]);
+    model.addConstr(y3 + ad >= x[i3]);
     
+    //copy
     model.addConstr(y4 <= x[i4]);
-    model.addConstr(a <= x[i4]);
-    model.addConstr(y4 + a >= x[i4]);
-    model.addConstr(y5 == x[i5] + a + z1 + z2);
+    model.addConstr(ad <= x[i4]);
+    model.addConstr(y4 + ad >= x[i4]);
+    model.addConstr(y5 == x[i5] + ad + z1 + z2);
 
     x[i1] = y1;
     x[i2] = y2;
@@ -209,7 +214,7 @@ int  MidSolutionCounter( int rounds, const bitset<285> & start, const bitset<288
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
     env.set(GRB_IntParam_Threads, 48);
-    env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding additional solutions 
+    env.set(GRB_IntParam_PoolSearchMode, 2);//finding n best solutions 
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
     GRBModel model = GRBModel(env);
 

@@ -170,7 +170,8 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
     env.set(GRB_IntParam_Threads, 48);
-    env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding additional solutions 
+    env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding n best solutions 
+    env.set(GRB_IntParam_MIPFocus, 3 );
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
     GRBModel model = GRBModel(env);
 
