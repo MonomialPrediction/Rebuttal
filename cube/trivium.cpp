@@ -9,8 +9,6 @@
 #include<chrono>
 #include"gurobi_c++.h" 
 
-#define TRIVIUMCORE triviumCore
-
 using namespace std;
 
 int depth = 0;
@@ -49,7 +47,7 @@ struct cmp285
     }
 };
 
-void triviumCore2(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
+void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
 {    
    int Ineq[][11] = {
     {0, -1, -1, 0, -1, -1, 1, 1, 0, 1, 1},
@@ -91,43 +89,6 @@ void triviumCore2(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, in
      x[i3] = y3;
      x[i4] = y4;
      x[i5] = y5;
-}
-
-
-void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int i4, int i5)
-{
-    GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y2 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar z1 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar z2 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar a = model.addVar(0, 1, 0, GRB_BINARY);
-
-    model.addConstr(y1 <= x[i1]);
-    model.addConstr(z1 <= x[i1]);
-    model.addConstr(y1 + z1 >= x[i1]);
-
-    model.addConstr(y2 <= x[i2]);
-    model.addConstr(z2 <= x[i2]);
-    model.addConstr(y2 + z2 >= x[i2]);
-
-    model.addConstr(y3 <= x[i3]);
-    model.addConstr(a <= x[i3]);
-    model.addConstr(y3 + a >= x[i3]);
-    
-    model.addConstr(y4 <= x[i4]);
-    model.addConstr(a <= x[i4]);
-    model.addConstr(y4 + a >= x[i4]);
-
-    model.addConstr(y5 == x[i5] + a + z1 + z2);
-
-    x[i1] = y1;
-    x[i2] = y2;
-    x[i3] = y3;
-    x[i4] = y4;
-    x[i5] = y5;
 }
 
 int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288> > & term )
@@ -200,7 +161,7 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
     for ( auto it : counterMap )
         if ( it.second % 2 == 1 )
             term.push_back( it.first );
-    cout << "Exact terms: " << term.size() << endl;
+    return 0;
 }
 
 int  MidSolutionCounter( int rounds, bitset<80> cube, const bitset<288> & last, 
@@ -253,24 +214,16 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
         nk += s[i];
     model.setObjective( nk, GRB_MINIMIZE );
 
-    cout << getCurrentSystemTime() << endl;
-    f << getCurrentSystemTime() << endl;
+    //cout << getCurrentSystemTime() << endl;
+    //f << getCurrentSystemTime() << endl;
 
-    if ( rounds > 600 )
-         model.set(GRB_DoubleParam_TimeLimit, 120.0 );
-    else if ( rounds > 500 )
-         model.set(GRB_DoubleParam_TimeLimit, 180.0 );
-    else if ( rounds > 400 )
-         model.set(GRB_DoubleParam_TimeLimit, 240.0 );
-    else if ( rounds > 300 )
-         model.set(GRB_DoubleParam_TimeLimit, 600.0 );
-
+    if ( rounds > 300 )
+         model.set(GRB_DoubleParam_TimeLimit, 3600.0 );
     model.optimize();
 
     if ( model.get( GRB_IntAttr_Status ) == GRB_TIME_LIMIT )
     {
         cout << "-------------------------------------------------------------- EXPAND" << endl;
-        f << "-------------------------------------------------------------- EXPAND" << endl;
         int c = 0;  
         vector<bitset<288>> T;
         int re = 0;
@@ -280,7 +233,6 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
             re++;
             SecondBackExpandPolynomial(re, last, T );  
             cout << "T Size: " << T.size() << " RE:" << re <<  endl;
-            f << "T Size: " << T.size() << " RE:" << re <<  endl;
         }while ( T.size() <= 16 && (re + 10) < rounds ); 
         int tsize = T.size();
 
@@ -289,7 +241,6 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
         for ( auto it : T )
         {
             cout << c << " out of " << tsize << "| Depth " << depth << endl;
-            f << c << " out of " << tsize << "| Depth " << depth << endl;
             c++;
             MidSolutionCounter( rounds - re, cube, it,  counterMap, f );    
         }
@@ -298,12 +249,12 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     else
     {
         double time = model.get(GRB_DoubleAttr_Runtime );
-        cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
-        f << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
+        //cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
+        //f << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
         
         int solCount = model.get(GRB_IntAttr_SolCount);
         cout << "---------------------------------------Raw Solutions: " << solCount << endl;
-        f << "----------------------------------------Raw Solutions: " << solCount << endl;
+        //f << "----------------------------------------Raw Solutions: " << solCount << endl;
 
         bitset<285> start;
         for ( int i = 0; i < solCount; i++ )
@@ -317,16 +268,15 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
             counterMap[start]++;
         }
     }
+    return 0;
 }
 
 int BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
 {
-    // Create the environ
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
-    env.set(GRB_StringParam_LogFile, "solutions.log" );
-    env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding additional solutions 
-    env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
+    env.set(GRB_IntParam_PoolSearchMode, 2); 
+    env.set(GRB_IntParam_PoolSolutions, MAX); 
 
     GRBModel model = GRBModel(env);
 
@@ -394,7 +344,8 @@ int BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
     for ( auto it : counterMap )
         if ( it.second % 2 == 1 )
             term.push_back( it.first );
-    cout << "Exact terms: " << term.size() << endl;
+    cout << "Exact Solutions: "  << term.size() << endl;
+    return 0;
 }
 
 
@@ -403,70 +354,121 @@ int main( int argc, char * argv[] )
     if ( argc != 3 )
     {
         cout << "Usage: ./trivium round cube_index" << endl;
-        cout << "Cube index: " << endl
-             << "Round: 840:" << endl;
-             << "Cube_index = 1: [0,1,...,79]/{70, 72, 74, 76, 78}" << endl
-             << "Cube_index = 2: [0,1,...,79]/{72, 74, 76, 78}" << endl
-             << "Cube_index = 3: [0,1,...,79]/{70, 74, 76, 78}" << endl;
+        cout << endl;
+        cout << "Valid Parameter: " << endl
+             << "round = 840" << endl
+             << "cube_index = 1: [0,1,...,79]/{70, 72, 74, 76, 78}" << endl
+             << "cube_index = 2: [0,1,...,79]/{72, 74, 76, 78}" << endl
+             << "cube_index = 3: [0,1,...,79]/{70, 74, 76, 78}" << endl
+             << endl
+             << "round = 841" << endl
+             << "Cube_index = 1: [0,1,...,79]/{70, 72, 76, 78}" << endl
+             << "Cube_index = 2: [0,1,...,79]/{72, 76, 78}" << endl
+             << endl
+             << "round = 842" << endl
+             << "Cube_index = 1: [0,1,...,79]/{72, 74, 76, 78}" << endl
+             << "Cube_index = 2: [0,1,...,79]/{74, 76, 78}" << endl;
+        return -1;
     }
-    
-    ofstream IV;
-    
-/*****************************************************************************
-    int MID = 1;
-    int ROUND = 841;
-    int I[] = { 74, 76, 78 };
-    IV.open( string ( "RESULT/EXP_74_76_78_" ) + to_string(ROUND) );
-    cout << "This is for trivium-841 with 74 76 78" << endl;
-    IV << "This is for trivium-841 with 74 76 78"  << endl;
-****************************************************************************/
-/*****************************************************************************
+    int round = atoi( argv[1] );
+    int index = atoi( argv[2] );
+
+    if ( !( round == 840 || round == 841 || round == 842 ) )
+    {
+        cout << "Usage: ./trivium round cube_index" << endl;
+        cout << "The first parameter can only be 840, 841, 842 rounds" << endl;
+        return -2;
+    }
+    else
+    {
+        if ( round == 840 )
+        {
+            if ( ! ( ( index == 1 ) || ( index == 2) || ( index == 3 ) ) ) 
+            {
+                cout << "Usage: ./trivium round cube_index" << endl;
+                cout << "The second parameter can only be 1, 2, 3 for round = 840" << endl;
+                return -3;
+            }
+        }
+        if ( round == 841 )
+        {
+            if ( ! ( ( index == 1 ) || ( index == 2) ) ) 
+            {
+                cout << "Usage: ./trivium round cube_index" << endl;
+                cout << "The second parameter can only be 1, 2 for round = 841" << endl;
+                return -3;
+            }
+        }
+        if ( round == 842 )
+        {
+            if ( ! ( ( index == 1 ) || ( index == 2) ) ) 
+            {
+                cout << "Usage: ./trivium round cube_index" << endl;
+                cout << "The second parameter can only be 1, 2 for round = 842" << endl;
+                return -3;
+            }
+        }
+    }
+    vector<int> I;
+    if ( round == 840 )
+    {
+        if ( index == 1 )
+        {
+            int c[] = {70, 72, 74, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+        if ( index == 2 )
+        {
+            int c[] = {72, 74, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+
+        }
+        if ( index == 3 )
+        {
+            int c[] = {70, 74, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+    }
+    else  if ( round == 841 )
+    {
+        if ( index == 1 )
+        {
+            int c[] = {70, 72, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+        if ( index == 2 )
+        {
+            static int c[] = {72, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+    }
+    else 
+    {
+        if ( index == 1 )
+        {
+            int c[] = {72, 74, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+        if ( index == 2 )
+        {
+            static int c[] = {74, 76, 78};
+            for ( auto it : c )
+                I.push_back( it );
+        }
+    }
+
+    int ROUND = round;
     int MID = 200;
-    int ROUND = 840;
-    int I[] = { 66, 68, 70, 72, 74, 76, 78 };
-    IV.open( string ( "RESULT/IV_66_68_andmore_EXP_" ) + to_string( ROUND ) );
-    cout << "This is for trivium-840 with I" << endl;
-    IV << "This is for trivium-840 with I" << endl;
-*****************************************************************************/
-/*****************************************************************************/
-    int MID = 1;
-    int ROUND = 841;
-    int I[] = { 74, 76, 78 };
-    IV.open( string ( "RESULT/841_74_76_78_AGAIN" ) + to_string(ROUND) );
-    cout << "This is for trivium-841 with 74 76 78" << endl;
-    IV << "This is for trivium-841 with 74 76 78"  << endl;
-/****************************************************************************/
-/*****************************************************************************
-    int MID = 1;
-    int ROUND = 843;
-    int I[] = { 72, 74 };
-    IV.open( string ( "RESULT/EXP_72_74_" ) + "843" );
-    cout << "This is for trivium-843 with 72 74" << endl;
-    IV << "This is for trivium-843 with 74 74"  << endl;
-****************************************************************************/
 
-/*****************************************************************************
-    int MID = 100;
-    int ROUND = 840;
-    int I[37] = { 0, 2, 4, 6, 8, 10, 12, 15, 17, 19, 21, 23, 25, 27, 30, 32, 34, 
-                 36, 38, 40, 42, 45, 47, 49, 51, 53, 55, 57, 60, 62, 64, 66, 68, 
-                 70, 72, 75, 79};
-    IV.open( string ( "RESULT/IVEXP840_I_" ) + "840" );
-    cout << "This is for trivium-840 with I" << endl;
-    IV << "This is for trivium-840 with I" << endl;
-****************************************************************************/
-
-/*****************************************************************************
-    int MID = 250;
-    int ROUND = 843;
-    int I[] = { 72, 74 };
-    IV.open( string ( "RESULT/IV_" ) + to_string(ROUND) + "_" + to_string(I[0]) );
-    cout << "This is for trivium-843  EXPAND 250 with 72 74" << endl;
-    IV << "This is for trivium-843 with EXPAND 250 72 74" << endl;
-*****************************************************************************/
-    cout << getCurrentSystemTime() << endl;
-    IV << getCurrentSystemTime() << endl;
+    // the start time
     auto start = chrono::steady_clock::now();
+
     vector<bitset<288>> midTerms;
     vector<bitset<80>> initialTerm;
     map< bitset<285>, int, cmp285 > gross, temp;
@@ -477,43 +479,29 @@ int main( int argc, char * argv[] )
     for ( auto it : I )
         cube.reset(it); 
 
+    cout << "Round: " << round << endl; 
     cout << "Cube: " << cube << endl;
-    IV << "Cube: " << cube << endl;
 
     BackExpandPolynomial( MID, midTerms );
-    cout << "MidTerms: " << midTerms.size() << endl;
-    IV << "MidTerms: " << midTerms.size() << endl;
 
     int count = 0;
     for ( auto it : midTerms )
     {	
 	    depth = 0;
         cout << "Trivium-" << ROUND << "   Term: " << count << "-th" << endl;
-        IV << "Trivium-" << ROUND << "   Term: " << count << "-th" << endl;
 	    count++;
-        //if ( count < 40 )
-        //    continue;
-        //IV << "Term: " << count++ << "-th" << endl;
         temp.clear();
-        MidSolutionCounter(ROUND - MID, cube, it, temp, IV); 
+        MidSolutionCounter(ROUND - MID, cube, it, temp); 
         for ( auto jt : temp )
             gross[jt.first] += jt.second;
     }
 
-    //IV.open( "IV840_EXP" );
     cout << "Raw Terms " << gross.size() << endl;
-    IV << "Raw Terms " << gross.size() << endl;
 
-cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-IV << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
     for ( auto it: gross )
     {
         cout << it.first << " [" << it.second << "]" << endl;
-        IV << it.first << " [" << it.second << "]" << endl;
     }
-
-cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-IV << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 
     for ( auto it : gross )
         if ( it.second % 2 == 1 )
@@ -525,30 +513,25 @@ IV << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << en
             initialTerm.push_back( tmp );
         }
 
-    IV << "ROUND : " << ROUND << endl 
-        << "Cube: " << cube << endl
-        << "Terms: " << initialTerm.size() << endl;
-
-    cout << "ROUND : " << ROUND << endl 
-        << "Cube: " << cube << endl
-        << "Terms: " << initialTerm.size() << endl;
     
     ofstream res;
-	res.open( "result_841_3" );
+	res.open( "result.txt" );
+
+    res  << "ROUND : " << ROUND << endl 
+         << "Cube: " << cube << endl
+         << "Terms: " << initialTerm.size() << endl;
 
     for ( auto it : initialTerm )
     {
         cout << it << endl;
-        IV << it << endl;
-	res << it << endl;
+	    res << it << endl;
     }
     res.close();
+
     auto end = chrono::steady_clock::now();
     auto time = chrono::duration<double> ( end - start );
     cout << getCurrentSystemTime() << endl;
-    IV << getCurrentSystemTime() << endl;
-    cout << "Time: " << time.count() << " seconds" << endl;
-    IV << "Time: " << time.count() << " seconds" << endl;
-    IV.close();
+
+    res << "Time: " << time.count() << " seconds" << endl;
 }
 

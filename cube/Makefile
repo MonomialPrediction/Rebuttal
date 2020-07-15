@@ -1,9 +1,9 @@
 TARGET=trivium
 
 CC=g++
-OPT=-m64 -std=c++11 -O3
+OPT= -std=c++11 -O3
 INC=-I/$$GUROBI_HOME/include/
-LIB=-L/$$GUROBI_HOME/lib -lgurobi_c++ -lgurobi90 -lm
+LIB=-L/$$GUROBI_HOME/lib -lgurobi_c++ -lgurobi81 -lm
 
 SRC=$(TARGET).cpp
 
