@@ -90,79 +90,6 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     x[i5] = y5;
 }
 
-int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288> > & term )
-{
-    GRBEnv env = GRBEnv();
-    env.set(GRB_IntParam_LogToConsole, 0);
-    env.set(GRB_IntParam_PoolSearchMode, 2);//find n best solutions 
-    env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
-    GRBModel model = GRBModel(env);
-
-    vector<GRBVar> s(288);
-    for (int i = 0; i < 288; i++)
-        s[i] = model.addVar(0, 1, 0, GRB_BINARY);
-
-    vector<GRBVar> works = s;
-    for (int r = 0; r < rounds; r++) 
-    {
-        triviumCore(model, works, 65, 170, 90, 91, 92);
-        triviumCore(model, works, 161, 263, 174, 175, 176);
-        triviumCore(model, works, 242, 68, 285, 286, 287);
-            
-        vector<GRBVar> temp = works;
-        for (int i = 0; i < 288; i++) 
-            works[(i + 1) % 288] = temp[i];
-    }
-
-    for ( int i = 0; i < 288; i++ )
-        if ( final[i] == 0 )
-            model.addConstr( works[i] == 0 );
-        else
-            model.addConstr( works[i] == 1 );
-
-    model.update();
-    model.optimize();
-
-    map<bitset<288>, int, cmp288> counterMap; 
-
-    if( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
-    {
-        double time = model.get(GRB_DoubleAttr_Runtime );
-        cout << "Time Used: " << time << "sec" << endl;
-        
-        int solCount = model.get(GRB_IntAttr_SolCount);
-        cout << "Raw Solutions: " << solCount << endl;
-
-        bitset<288> start;
-        for ( int i = 0; i < solCount; i++ )
-        {
-            model.set(GRB_IntParam_SolutionNumber, i );
-
-            for ( int j = 0; j < 288; j++ ) 
-                if ( round( s[j].get( GRB_DoubleAttr_Xn ) ) == 1 )  
-                    start[j] = 1;
-                else 
-                    start[j] = 0;
-            counterMap[start]++;
-        }
-    }
-    else if( model.get( GRB_IntAttr_Status ) == GRB_INFEASIBLE )
-    {
-        cout << "No terms " << endl;
-        exit(-2);
-    }
-    else
-    {
-        cout << "Other status " << GRB_IntAttr_Status <<  endl;
-        exit(-1);
-    }
-
-    for ( auto it : counterMap )
-        if ( it.second % 2 == 1 )
-            term.push_back( it.first );
-    return 0;
-}
-
 int  MidSolutionCounter( int rounds, bitset<80> cube, const bitset<288> & last, 
 map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 {
@@ -217,39 +144,10 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     //cout << getCurrentSystemTime() << endl;
     //f << getCurrentSystemTime() << endl;
 
-    if ( rounds > 300 )
-         model.set(GRB_DoubleParam_TimeLimit, 3600.0 );
-    model.optimize();
-
-    if ( model.get( GRB_IntAttr_Status ) == GRB_TIME_LIMIT )
-    {
-        //cout << "-------------------------------------------------------------- EXPAND" << endl;
-        int c = 0;  
-        vector<bitset<288>> T;
-        int re = 0;
-        do 
-        {
-            T.clear();
-            re++;
-            SecondBackExpandPolynomial(re, last, T );  
-            //cout << "T Size: " << T.size() << " RE:" << re <<  endl;
-        }while ( T.size() <= 16 && (re + 10) < rounds ); 
-        int tsize = T.size();
-
-        int count = 0;
-	    depth++;
-        for ( auto it : T )
-        {
-            //cout << c << " out of " << tsize << "| Depth " << depth << endl;
-            c++;
-            MidSolutionCounter( rounds - re, cube, it,  counterMap, f );    
-        }
-	    depth --;
-    }
-    else
+    if ( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
     {
         double time = model.get(GRB_DoubleAttr_Runtime );
-        //cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
+        cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
         //f << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
         
         int solCount = model.get(GRB_IntAttr_SolCount);
