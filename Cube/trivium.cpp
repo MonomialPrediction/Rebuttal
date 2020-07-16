@@ -143,6 +143,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 
     //cout << getCurrentSystemTime() << endl;
     //f << getCurrentSystemTime() << endl;
+    model.optimize();
 
     if ( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
     {
