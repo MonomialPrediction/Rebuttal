@@ -34,24 +34,24 @@ to compute the degree of Trivium up to 834 rounds.
 After you compile the code, type 
 `./trivium [ROUND] [INDEX]`  
 The possible combinations of (ROUND, INDEX) is listed as follows, 
-1. ROUND = 840, INDEX = 1
+1. ROUND = 840, INDEX = 1:
     Recover the superpoly for [0,1,...,79]/{70, 72, 74, 76, 78} of 840-round Trivium
 
-2. ROUND = 840, INDEX = 2
+2. ROUND = 840, INDEX = 2:
     Recover the superpoly for [0,1,...,79]/{72, 74, 76, 78} of 840-round Trivium
 
-3. ROUND = 840, INDEX = 3
+3. ROUND = 840, INDEX = 3:
     Recover the superpoly for [0,1,...,79]/{70, 74, 76, 78} of 840-round Trivium
 
-4. ROUND = 841, INDEX = 1
+4. ROUND = 841, INDEX = 1:
     Recover the superpoly for [0,1,...,79]/{70, 72, 76, 78} of 841-round Trivium
 
-5. ROUND = 841, INDEX = 2
+5. ROUND = 841, INDEX = 2:
     Recover the superpoly for [0,1,...,79]/{72, 76, 78} of 841-round Trivium
 
-6. ROUND = 842, INDEX = 1
+6. ROUND = 842, INDEX = 1:
     Recover the superpoly for [0,1,...,79]/{72, 74, 76, 78} of 842-round Trivium
 
-7. ROUND = 842, INDEX = 2
+7. ROUND = 842, INDEX = 2:
     Recover the superpoly for [0,1,...,79]/{74, 76, 78} of 842-round Trivium
 
