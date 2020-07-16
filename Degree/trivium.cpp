@@ -458,7 +458,18 @@ int main()
         DEG[i].deg = UpBound( i, MID, Term, DEG[i].vec );
         cout << "-----------------------------------------------------------------------" << endl;
         cout << "Round: " << i << " | "  << "Upbound: " <<  DEG[i].deg << endl;; 
-	    cout << DEG[i].vec << endl;
+	    //cout << DEG[i].vec << endl;
+        for ( int j = 0; j < 80; j++ )
+            if ( DEG[i].vec[j] == 1 )
+                cout << "k" << j << " ";
+
+        cout << "  |  ";
+
+        for ( int j = 0; j < 80; j++ )
+            if ( DEG[i].vec[j + 93] == 1 )
+                cout << "x" << j << " ";
+        cout << endl;
+
         cout << "-----------------------------------------------------------------------" << endl;
         cout << getCurrentSystemTime() << endl;
         cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
