@@ -39,7 +39,7 @@ After you compile the code, type
 
 `./trivium [ROUND] [INDEX]`  
 
-The possible combinations of (ROUND, INDEX) is listed as follows, 
+The possible combinations of (ROUND, INDEX) are listed as follows, 
 1. ROUND = 840, INDEX = 1:
     Recover the superpoly for [0,1,...,79]/{70, 72, 74, 76, 78} of 840-round Trivium
 
