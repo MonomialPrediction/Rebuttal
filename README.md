@@ -23,6 +23,8 @@ After you install the solver, then you need to edit Makefile to modify --lgurobi
 
 to compilen our code.
 
+### Run the Code
+
 #### Compute the Exact Degree
 
 After you compile the code, just type 
