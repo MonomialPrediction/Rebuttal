@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#define THREAD 28
+
 int depth = 0;
 
 const int MAX = 200000000; // the maximum value of PoolSearchMode, P625
@@ -95,7 +97,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
 {
     GRBEnv env = GRBEnv();
     env.set(GRB_IntParam_LogToConsole, 0);
-    env.set(GRB_IntParam_Threads, 48);
+    env.set(GRB_IntParam_Threads, THREAD);
     env.set(GRB_IntParam_PoolSearchMode, 2);//focus on finding n best solutions 
     env.set(GRB_IntParam_MIPFocus, 3 );
     env.set(GRB_IntParam_PoolSolutions, MAX); // try to find 2000000
@@ -164,7 +166,6 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
                 start[j] = 0;
         counterMap[start]++;
     }
-
     return 0;
 }
 
@@ -381,6 +382,7 @@ int main( int argc, char * argv[] )
 
     cout << "Round: " << round << endl; 
     cout << "Cube: " << cube << endl;
+    cout << "Thread: " << cube << endl;
 
     BackExpandPolynomial( MID, midTerms );
 
@@ -421,7 +423,7 @@ int main( int argc, char * argv[] )
          << "Cube: " << cube << endl
          << "Terms: " << initialTerm.size() << endl;
 
-    res  << "ROUND : " << ROUND << endl 
+    cout  << "ROUND : " << ROUND << endl 
          << "Cube: " << cube << endl
          << "Terms: " << initialTerm.size() << endl;
 
@@ -429,9 +431,17 @@ int main( int argc, char * argv[] )
     {
         cout << it << endl;
 	    res << it << endl;
+        int flg = 0;
         for ( int i = 0; i < 80; i++ )
+        {
             if ( it[i] == 1 )
+            {
                 cout << "k" << i << ' ';
+                flg = 1; // not all zero
+            }
+        }
+        if ( flg == 0 ) // all are zero
+            cout << "1"; 
         cout << endl;
     }
 
