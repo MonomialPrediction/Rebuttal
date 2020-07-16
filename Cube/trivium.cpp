@@ -418,17 +418,26 @@ int main( int argc, char * argv[] )
          << "Cube: " << cube << endl
          << "Terms: " << initialTerm.size() << endl;
 
+    res  << "ROUND : " << ROUND << endl 
+         << "Cube: " << cube << endl
+         << "Terms: " << initialTerm.size() << endl;
+
     for ( auto it : initialTerm )
     {
         cout << it << endl;
 	    res << it << endl;
+        for ( int i = 0; i < 80; i++ )
+            if ( it[i] == 1 )
+                cout << "k" << i << ' ';
+        cout << endl;
     }
-    res.close();
 
     auto end = chrono::steady_clock::now();
     auto time = chrono::duration<double> ( end - start );
     cout << getCurrentSystemTime() << endl;
 
     res << "Time: " << time.count() << " seconds" << endl;
+    cout << "Time: " << time.count() << " seconds" << endl;
+    res.close();
 }
 
