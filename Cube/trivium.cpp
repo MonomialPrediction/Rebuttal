@@ -139,7 +139,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     GRBLinExpr nk = 0;
     for ( int i = 0; i < 80; i++ )
         nk += s[i];
-    model.setObjective( nk, GRB_MINIMIZE );
+    model.setObjective( nk, GRB_MAXIMIZE );
 
     //cout << getCurrentSystemTime() << endl;
     //f << getCurrentSystemTime() << endl;
