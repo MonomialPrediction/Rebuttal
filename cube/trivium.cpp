@@ -47,48 +47,47 @@ struct cmp285
     }
 };
 
-void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
-{    
-   int Ineq[][11] = {
-    {0, -1, -1, 0, -1, -1, 1, 1, 0, 1, 1},
-    {0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1},
-    {0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0},
-    {0, -1, 0, -1, -1, -1, 1, 0, 1, 1, 1},
-    {0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 1, -1, 0, 0, 0, 0, 1, 0, 0},
-    {2, 0, 1, 0, 1, 0, -1, 0, 0, -1, -1},
-    {0, 1, 1, 0, 1, 1, 0, 0, 0, -1, 0},
-    {3, 1, 0, 0, 1, 0, 0, -1, -1, -1, -1},
-    {2, 0, 0, 1, 1, 0, -1, 0, 0, -1, -1},
-    {0, 1, 0, 1, 1, 1, 0, 0, 0, -1, 0},
-    {3, 0, 0, 0, 1, 1, -1, -1, -1, -1, 0}
-    };  
+void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int i4, int i5)
+{
     GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y2 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
-    
-    for ( auto it : Ineq )
-        model.addConstr( it[0] + 
-                         it[1] * x[i1] + 
-                         it[2] * x[i2] + 
-                         it[3] * x[i3] + 
-                         it[4] * x[i4] + 
-                         it[5] * x[i5] + 
-                         it[6] * y1 + 
-                         it[7] * y2 + 
-                         it[8] * y3 + 
-                         it[9] * y4 +  
-                         it[10] * y5 >= 0 );
 
-     x[i1] = y1;
-     x[i2] = y2;
-     x[i3] = y3;
-     x[i4] = y4;
-     x[i5] = y5;
+    GRBVar z1 = model.addVar(0, 1, 0, GRB_BINARY);
+    GRBVar z2 = model.addVar(0, 1, 0, GRB_BINARY);
+
+    // z3 and z4 are not needed, since z3 = z4 = a
+    GRBVar a = model.addVar(0, 1, 0, GRB_BINARY);
+
+    //copy
+    model.addConstr(y1 <= x[i1]);
+    model.addConstr(z1 <= x[i1]);
+    model.addConstr(y1 + z1 >= x[i1]);
+
+    //copy
+    model.addConstr(y2 <= x[i2]);
+    model.addConstr(z2 <= x[i2]);
+    model.addConstr(y2 + z2 >= x[i2]);
+
+    //copy
+    model.addConstr(y3 <= x[i3]);
+    model.addConstr(a <= x[i3]);
+    model.addConstr(y3 + ad >= x[i3]);
+    
+    //copy
+    model.addConstr(y4 <= x[i4]);
+    model.addConstr(a <= x[i4]);
+    model.addConstr(y4 + ad >= x[i4]);
+    //XOR
+    model.addConstr(y5 == x[i5] + a + z1 + z2);
+
+    x[i1] = y1;
+    x[i2] = y2;
+    x[i3] = y3;
+    x[i4] = y4;
+    x[i5] = y5;
 }
 
 int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288> > & term )

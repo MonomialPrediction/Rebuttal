@@ -9,8 +9,6 @@
 #include<chrono>
 #include"gurobi_c++.h" 
 
-#define TRIVIUMCORE triviumCore
-
 using namespace std;
 
 int depth = 0;
@@ -49,50 +47,6 @@ struct cmp285
     }
 };
 
-void triviumCore2(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
-{    
-   int Ineq[][11] = {
-    {0, -1, -1, 0, -1, -1, 1, 1, 0, 1, 1},
-    {0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1},
-    {0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0},
-    {0, -1, 0, -1, -1, -1, 1, 0, 1, 1, 1},
-    {0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0},
-    {0, 0, 1, -1, 0, 0, 0, 0, 1, 0, 0},
-    {2, 0, 1, 0, 1, 0, -1, 0, 0, -1, -1},
-    {0, 1, 1, 0, 1, 1, 0, 0, 0, -1, 0},
-    {3, 1, 0, 0, 1, 0, 0, -1, -1, -1, -1},
-    {2, 0, 0, 1, 1, 0, -1, 0, 0, -1, -1},
-    {0, 1, 0, 1, 1, 1, 0, 0, 0, -1, 0},
-    {3, 0, 0, 0, 1, 1, -1, -1, -1, -1, 0}
-    };  
-    GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y2 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
-    GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
-    
-    for ( auto it : Ineq )
-        model.addConstr( it[0] + 
-                         it[1] * x[i1] + 
-                         it[2] * x[i2] + 
-                         it[3] * x[i3] + 
-                         it[4] * x[i4] + 
-                         it[5] * x[i5] + 
-                         it[6] * y1 + 
-                         it[7] * y2 + 
-                         it[8] * y3 + 
-                         it[9] * y4 +  
-                         it[10] * y5 >= 0 );
-
-     x[i1] = y1;
-     x[i2] = y2;
-     x[i3] = y3;
-     x[i4] = y4;
-     x[i5] = y5;
-}
-
 void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int i4, int i5)
 {
     GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
@@ -104,8 +58,8 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     GRBVar z1 = model.addVar(0, 1, 0, GRB_BINARY);
     GRBVar z2 = model.addVar(0, 1, 0, GRB_BINARY);
 
-    // z3 and z4 are not needed, since z3 = z4 = ad
-    GRBVar ad = model.addVar(0, 1, 0, GRB_BINARY);
+    // z3 and z4 are not needed, since z3 = z4 = a
+    GRBVar a = model.addVar(0, 1, 0, GRB_BINARY);
 
     //copy
     model.addConstr(y1 <= x[i1]);
@@ -119,14 +73,15 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
 
     //copy
     model.addConstr(y3 <= x[i3]);
-    model.addConstr(ad <= x[i3]);
+    model.addConstr(a <= x[i3]);
     model.addConstr(y3 + ad >= x[i3]);
     
     //copy
     model.addConstr(y4 <= x[i4]);
-    model.addConstr(ad <= x[i4]);
+    model.addConstr(a <= x[i4]);
     model.addConstr(y4 + ad >= x[i4]);
-    model.addConstr(y5 == x[i5] + ad + z1 + z2);
+    //XOR
+    model.addConstr(y5 == x[i5] + a + z1 + z2);
 
     x[i1] = y1;
     x[i2] = y2;
@@ -135,6 +90,7 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     x[i5] = y5;
 }
 
+// to continue to decrypt the intermediate monomials
 int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288> > & term )
 {
     GRBEnv env = GRBEnv();
@@ -150,9 +106,9 @@ int SecondBackExpandPolynomial( int rounds, bitset<288> final, vector<bitset<288
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
-        TRIVIUMCORE(model, works, 65, 170, 90, 91, 92);
-        TRIVIUMCORE(model, works, 161, 263, 174, 175, 176);
-        TRIVIUMCORE(model, works, 242, 68, 285, 286, 287);
+        triviumCore(model, works, 65, 170, 90, 91, 92);
+        triviumCore(model, works, 161, 263, 174, 175, 176);
+        triviumCore(model, works, 242, 68, 285, 286, 287);
             
         vector<GRBVar> temp = works;
         for (int i = 0; i < 288; i++) 
@@ -233,9 +189,9 @@ int  MidSolutionCounter( int rounds, const bitset<285> & start, const bitset<288
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
-        TRIVIUMCORE(model, works, 65, 170, 90, 91, 92);
-        TRIVIUMCORE(model, works, 161, 263, 174, 175, 176);
-        TRIVIUMCORE(model, works, 242, 68, 285, 286, 287);
+        triviumCore(model, works, 65, 170, 90, 91, 92);
+        triviumCore(model, works, 161, 263, 174, 175, 176);
+        triviumCore(model, works, 242, 68, 285, 286, 287);
             
         vector<GRBVar> temp = works;
         for (int i = 0; i < 288; i++) 
@@ -303,9 +259,9 @@ void BackExpandPolynomial( int rounds, vector<bitset<288> > & term )
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
-        TRIVIUMCORE(model, works, 65, 170, 90, 91, 92);
-        TRIVIUMCORE(model, works, 161, 263, 174, 175, 176);
-        TRIVIUMCORE(model, works, 242, 68, 285, 286, 287);
+        triviumCore(model, works, 65, 170, 90, 91, 92);
+        triviumCore(model, works, 161, 263, 174, 175, 176);
+        triviumCore(model, works, 242, 68, 285, 286, 287);
             
         vector<GRBVar> temp = works;
         for (int i = 0; i < 288; i++) 
@@ -400,9 +356,9 @@ int UpBound( int rounds, int backrounds, vector<bitset<288>> & Term, bitset<285>
     vector<GRBVar> works = s;
     for (int r = 0; r < rounds; r++) 
     {
-        TRIVIUMCORE(model, works, 65, 170, 90, 91, 92);
-        TRIVIUMCORE(model, works, 161, 263, 174, 175, 176);
-        TRIVIUMCORE(model, works, 242, 68, 285, 286, 287);
+        triviumCore(model, works, 65, 170, 90, 91, 92);
+        triviumCore(model, works, 161, 263, 174, 175, 176);
+        triviumCore(model, works, 242, 68, 285, 286, 287);
             
         vector<GRBVar> temp = works;
         for (int i = 0; i < 288; i++) 
