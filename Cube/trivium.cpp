@@ -141,7 +141,7 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
         nk += s[i];
     model.setObjective( nk, GRB_MAXIMIZE );
 
-    //cout << getCurrentSystemTime() << endl;
+    cout << getCurrentSystemTime() << endl;
     //f << getCurrentSystemTime() << endl;
     model.optimize();
 
