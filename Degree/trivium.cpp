@@ -74,12 +74,12 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     //copy
     model.addConstr(y3 <= x[i3]);
     model.addConstr(a <= x[i3]);
-    model.addConstr(y3 + ad >= x[i3]);
+    model.addConstr(y3 + a >= x[i3]);
     
     //copy
     model.addConstr(y4 <= x[i4]);
     model.addConstr(a <= x[i4]);
-    model.addConstr(y4 + ad >= x[i4]);
+    model.addConstr(y4 + a >= x[i4]);
     //XOR
     model.addConstr(y5 == x[i5] + a + z1 + z2);
 
