@@ -145,28 +145,26 @@ map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
     //f << getCurrentSystemTime() << endl;
     model.optimize();
 
-    if ( model.get( GRB_IntAttr_Status ) == GRB_OPTIMAL )
-    {
-        double time = model.get(GRB_DoubleAttr_Runtime );
-        cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
-        //f << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
-        
-        int solCount = model.get(GRB_IntAttr_SolCount);
-        cout << "---------------------------------------Raw Solutions: " << solCount << endl;
-        //f << "----------------------------------------Raw Solutions: " << solCount << endl;
+    double time = model.get(GRB_DoubleAttr_Runtime );
+    cout << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
+    //f << "Rounds: " << rounds << "  Time Used: " << time << "sec" << endl;
+    
+    int solCount = model.get(GRB_IntAttr_SolCount);
+    cout << "---------------------------------------Raw Solutions: " << solCount << endl;
+    //f << "----------------------------------------Raw Solutions: " << solCount << endl;
 
-        bitset<285> start;
-        for ( int i = 0; i < solCount; i++ )
-        {
-            model.set(GRB_IntParam_SolutionNumber, i );
-            for ( int j = 0; j < 285; j++ ) 
-                if ( round( s[j].get( GRB_DoubleAttr_Xn ) ) == 1 )  
-                    start[j] = 1;
-                else 
-                    start[j] = 0;
-            counterMap[start]++;
-        }
+    bitset<285> start;
+    for ( int i = 0; i < solCount; i++ )
+    {
+        model.set(GRB_IntParam_SolutionNumber, i );
+        for ( int j = 0; j < 285; j++ ) 
+            if ( round( s[j].get( GRB_DoubleAttr_Xn ) ) == 1 )  
+                start[j] = 1;
+            else 
+                start[j] = 0;
+        counterMap[start]++;
     }
+
     return 0;
 }
 
