@@ -15,12 +15,43 @@ This is the repository for the rebuttal phase of of our paper submitted to Asiac
 
 To run our code, you should first install the [Gurobi solver](https://www.gurobi.com) and set the proper license. 
 
-### Compile and Run
+### Compile 
 
 After you install the solver, then you need to edit Makefile to modify --lgurobixx to your own version. Then type 
 
 `make`
 
-`./trivium`
+to compilen our code.
 
-to compile and run our code.
+#### Compute the Exact Degree
+
+After you compile the code, just type 
+`./trivium`
+to compute the degree of Trivium up to 834 rounds.
+
+#### Recover the Superpoly
+
+After you compile the code, type 
+`./trivium [ROUND] [INDEX]`  
+The possible combinations of (ROUND, INDEX) is listed as follows, 
+1. ROUND = 840, INDEX = 1
+    Recover the superpoly for [0,1,...,79]/{70, 72, 74, 76, 78} of 840-round Trivium
+
+2. ROUND = 840, INDEX = 2
+    Recover the superpoly for [0,1,...,79]/{72, 74, 76, 78} of 840-round Trivium
+
+3. ROUND = 840, INDEX = 3
+    Recover the superpoly for [0,1,...,79]/{70, 74, 76, 78} of 840-round Trivium
+
+4. ROUND = 841, INDEX = 1
+    Recover the superpoly for [0,1,...,79]/{70, 72, 76, 78} of 841-round Trivium
+
+5. ROUND = 841, INDEX = 2
+    Recover the superpoly for [0,1,...,79]/{72, 76, 78} of 841-round Trivium
+
+6. ROUND = 842, INDEX = 1
+    Recover the superpoly for [0,1,...,79]/{72, 74, 76, 78} of 842-round Trivium
+
+7. ROUND = 842, INDEX = 2
+    Recover the superpoly for [0,1,...,79]/{74, 76, 78} of 842-round Trivium
+
