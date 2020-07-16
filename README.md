@@ -26,13 +26,17 @@ to compilen our code.
 #### Compute the Exact Degree
 
 After you compile the code, just type 
+
 `./trivium`
+
 to compute the degree of Trivium up to 834 rounds.
 
 #### Recover the Superpoly
 
 After you compile the code, type 
+
 `./trivium [ROUND] [INDEX]`  
+
 The possible combinations of (ROUND, INDEX) is listed as follows, 
 1. ROUND = 840, INDEX = 1:
     Recover the superpoly for [0,1,...,79]/{70, 72, 74, 76, 78} of 840-round Trivium
