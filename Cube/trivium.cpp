@@ -269,6 +269,7 @@ int main( int argc, char * argv[] )
     }
     int round = atoi( argv[1] );
     int index = atoi( argv[2] );
+    int MID = 200;
 
     if ( !( round == 840 || round == 841 || round == 842 ) )
     {
@@ -309,6 +310,7 @@ int main( int argc, char * argv[] )
     vector<int> I;
     if ( round == 840 )
     {
+        MID = 200;
         if ( index == 1 )
         {
             int c[] = {70, 72, 74, 76, 78};
@@ -331,6 +333,7 @@ int main( int argc, char * argv[] )
     }
     else  if ( round == 841 )
     {
+        MID = 250;
         if ( index == 1 )
         {
             int c[] = {70, 72, 76, 78};
@@ -346,6 +349,7 @@ int main( int argc, char * argv[] )
     }
     else 
     {
+        MID = 300;
         if ( index == 1 )
         {
             int c[] = {72, 74, 76, 78};
@@ -361,7 +365,6 @@ int main( int argc, char * argv[] )
     }
 
     int ROUND = round;
-    int MID = 200;
 
     // the start time
     auto start = chrono::steady_clock::now();
