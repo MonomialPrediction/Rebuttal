@@ -49,6 +49,41 @@ struct cmp285
     }
 };
 
+void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i5, int i2, int i3, int i4)
+{    
+   int Ineq[][11] = {
+ {0, -1, -1, 0, -1, -1, 1, 1, 0, 1, 1},
+ {0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0},
+ {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0},
+ {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1},
+ {0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0},
+ {0, -1, 0, -1, -1, -1, 1, 0, 1, 1, 1},
+ {0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0},
+ {0, 0, 1, -1, 0, 0, 0, 0, 1, 0, 0},
+ {2, 0, 1, 0, 1, 0, -1, 0, 0, -1, -1},
+ {0, 1, 1, 0, 1, 1, 0, 0, 0, -1, 0},
+ {3, 1, 0, 0, 1, 0, 0, -1, -1, -1, -1},
+ {2, 0, 0, 1, 1, 0, -1, 0, 0, -1, -1},
+ {0, 1, 0, 1, 1, 1, 0, 0, 0, -1, 0},
+ {3, 0, 0, 0, 1, 1, -1, -1, -1, -1, 0}
+ };  
+ GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
+ GRBVar y2 = model.addVar(0, 1, 0, GRB_BINARY);
+ GRBVar y3 = model.addVar(0, 1, 0, GRB_BINARY);
+ GRBVar y4 = model.addVar(0, 1, 0, GRB_BINARY);
+ GRBVar y5 = model.addVar(0, 1, 0, GRB_BINARY);
+    
+ for ( auto it : Ineq )
+    model.addConstr( it[0] + it[1] * x[i1] + it[2] * x[i2] + it[3] * x[i3] + it[4] * x[i4] + it[5] * x[i5] + it[6] * y1 + it[7] * y2 + it[8] * y3 + it[9] * y4 +  it[10] * y5 >= 0 );
+
+ x[i1] = y1;
+ x[i2] = y2;
+ x[i3] = y3;
+ x[i4] = y4;
+ x[i5] = y5;
+}
+
+/*
 void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int i4, int i5)
 {
     GRBVar y1 = model.addVar(0, 1, 0, GRB_BINARY);
@@ -91,6 +126,7 @@ void triviumCore(GRBModel& model, vector<GRBVar>& x, int i1, int i2, int i3, int
     x[i4] = y4;
     x[i5] = y5;
 }
+*/
 
 int  MidSolutionCounter( int rounds, bitset<80> cube, const bitset<288> & last, 
 map<bitset<285>, int, cmp285> & counterMap, ostream & f = cout )
